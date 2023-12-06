@@ -3,12 +3,12 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:minisitewalkapp/core/presentation/atoms/icons/ic_profile.dart';
 import 'package:minisitewalkapp/core/presentation/molecules/app_bars/app_bar_with_leading_icon.dart';
 
-class ForgeViewerOnline extends StatefulWidget {
+class PWAViewer extends StatefulWidget {
   @override
-  State<ForgeViewerOnline> createState() => _ForgeViewerOnlineState();
+  State<PWAViewer> createState() => _PWAViewerState();
 }
 
-class _ForgeViewerOnlineState extends State<ForgeViewerOnline> {
+class _PWAViewerState extends State<PWAViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +26,8 @@ class _ForgeViewerOnlineState extends State<ForgeViewerOnline> {
       body: InAppWebView(
           onWebViewCreated: (controller) {},
           initialUrlRequest: URLRequest(
-              url: Uri.parse("https://minisitewalkappapi.onrender.com/"))),
+              url:
+                  Uri.parse("https://tb-disconnected-workflow.onrender.com/"))),
     ); //https://minisitewalkapp.vercel.app/ (with svf in local file)
   }
 }

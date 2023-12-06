@@ -15,6 +15,7 @@ import 'package:minisitewalkapp/core/presentation/molecules/table_base.dart';
 import 'package:minisitewalkapp/core/presentation/molecules/text_14_grey_500_icon.dart';
 import 'package:minisitewalkapp/modules/forge_viewer/forge_viewerOffline.dart';
 import 'package:minisitewalkapp/modules/forge_viewer/forge_viewerOnline.dart';
+import 'package:minisitewalkapp/modules/forge_viewer/pwa_viewerOffline.dart';
 import 'package:minisitewalkapp/modules/home/bloc/init_bloc.dart';
 import 'package:minisitewalkapp/modules/home/bloc/init_states.dart';
 import 'package:minisitewalkapp/modules/home/constants/inspection_phase_const.dart';
@@ -114,6 +115,12 @@ class dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> names = [
+      "Public Web Addres",
+      "Local Http Web Addres",
+      "Public Web Addres with Offline Mode Support"
+    ];
+
     return Scaffold(
       appBar: AppBarWithLeadingIcon(
         leadingWidget: Padding(
@@ -257,10 +264,16 @@ class dashboard extends StatelessWidget {
                                   return ForgeViewerOnline();
                                 },
                               ));
-                            } else {
+                            } else if (index == 1) {
                               Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) {
                                   return ForgeViewer();
+                                },
+                              ));
+                            } else if (index == 2) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) {
+                                  return PWAViewer();
                                 },
                               ));
                             }
@@ -270,9 +283,7 @@ class dashboard extends StatelessWidget {
                             child: Row(children: [
                               TableBaseCell(
                                 flex: 6,
-                                cell: Text14grey500(index == 0
-                                    ? "Shaver"
-                                    : '07_THE RESIDENCES ON MCGINNIS '),
+                                cell: Text14grey500(names[index]),
                               )
                             ]),
                           ),
@@ -281,7 +292,7 @@ class dashboard extends StatelessWidget {
                       separatorBuilder: (context, index) {
                         return VSpace.h16();
                       },
-                      itemCount: 2))
+                      itemCount: names.length))
             ],
           ),
         ),

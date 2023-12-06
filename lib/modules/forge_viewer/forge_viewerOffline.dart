@@ -11,38 +11,17 @@ class ForgeViewer extends StatefulWidget {
   State<ForgeViewer> createState() => _ForgeViewerState();
 }
 
+//in app web view
 class _ForgeViewerState extends State<ForgeViewer> {
-  final InAppLocalhostServer localhostServer = new InAppLocalhostServer();
+  final InAppLocalhostServer localhostServer =
+      new InAppLocalhostServer(port: 5123);
   late InAppWebViewController webViewController;
-  // late WebViewController controller;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     localhostServer.start();
-    // controller = WebViewController()
-    //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    //   ..setNavigationDelegate(
-    //     NavigationDelegate(
-    //       onPageStarted: (url) {
-    //         // print("Hola miguel 1");
-    //       },
-    //       onPageFinished: (url) {
-    //         // print("miguel is: " + url);
-    //         if (url.endsWith("index.html")) {
-    //           // controller.runJavaScript('''console.log("\Miguel\")''');
-    //           // controller.loadFlutterAsset("assets/js-forge-viewer/index.html");
-    //           // controller.runJavaScript(scriptJS);
-    //           //               controller.runJavaScript(
-    //           //                   '''const sth = document.getElementById("preview");
-    //           // sth.innerText = "miguel hola";''');
-    //         }
-    //       },
-    //       onWebResourceError: (WebResourceError error) {},
-    //     ),
-    //   );
-    // ..loadFlutterAsset(AssetPaths.indexHtml);
   }
 
   @override
@@ -62,7 +41,7 @@ class _ForgeViewerState extends State<ForgeViewer> {
         ),
         body: InAppWebView(
           initialUrlRequest: URLRequest(
-            url: Uri.parse("http://localhost:8080/assets/wwwroot/index.html"),
+            url: Uri.parse("http://localhost:5123/assets/wwwroot/index.html"),
           ),
           onWebViewCreated: (controller) {
             webViewController = controller;
@@ -87,3 +66,53 @@ class _ForgeViewerState extends State<ForgeViewer> {
         ));
   }
 }
+
+//web view flutter
+// class _ForgeViewerState extends State<ForgeViewer> {
+//   late WebViewController controller;
+
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     controller = WebViewController()
+//       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+//       ..setNavigationDelegate(
+//         NavigationDelegate(
+//           onPageStarted: (url) {
+//             // print("Hola miguel 1");
+//           },
+//           onPageFinished: (url) {
+//             // print("miguel is: " + url);
+//             if (url.endsWith("index.html")) {
+//               // controller.runJavaScript('''console.log("\Miguel\")''');
+//               // controller.loadFlutterAsset("assets/js-forge-viewer/index.html");
+//               // controller.runJavaScript(scriptJS);
+//               //               controller.runJavaScript(
+//               //                   '''const sth = document.getElementById("preview");
+//               // sth.innerText = "miguel hola";''');
+//             }
+//           },
+//           onWebResourceError: (WebResourceError error) {},
+//         ),
+//       )
+//       ..loadFlutterAsset(AssetPaths.indexHtml);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         appBar: AppBarWithLeadingIcon(
+//           trailingWidgets: [
+//             InkWell(
+//               onTap: () {
+//                 final mediaQuery = MediaQuery.of(context);
+//                 //icon profile ...
+//               },
+//               child: const IcProfile(),
+//             )
+//           ],
+//         ),
+//         body: WebViewWidget(controller: controller));
+//   }
+// }
