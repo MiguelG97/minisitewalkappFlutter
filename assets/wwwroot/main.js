@@ -1,17 +1,53 @@
-import {
-  initViewer,
-  loadModel,
-} from "./viewer.js";
-
 // const sth = document.getElementById("preview");
-// sth.innerText = "miguel hola";
+// sth.innerText = "hello from the main js file!!";
 
-initViewer(document.getElementById("preview"))
-  .then(async (viewer) => {
-    // const globalUrn =
-    //   "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6aXRpemJ1Y3ppYm00cG1wdHJ0ZWF0Z212bzRxMzRjYWstYmFzaWMtYXBwL3VuaXRSMTYyLnJ2dA";
-    // loadModel(viewer, globalUrn);
-  })
-  .catch((err) => {
-    console.log(err);
+function miguelfunction() {
+  console.log("hellor!!");
+}
+
+initViewer(document.getElementById("preview"));
+
+function initViewer(container) {
+  const options = {
+    env: "Local",
+    document: "resource/Unit_Floor_Plan.pdf",
+  };
+
+  return new Promise(function (resolve, reject) {
+    Autodesk.Viewing.Initializer(
+      options,
+      function () {
+        const config = {
+          extensions: [
+            "Autodesk.DocumentBrowser",
+          ],
+        };
+        const viewer =
+          new Autodesk.Viewing.GuiViewer3D(
+            container,
+            config
+          );
+
+        try {
+          //START: it initialize the viewer and loads extensions
+          //It also loads any model if passed any!
+          const startedCode = viewer.start(
+            options.document,
+            options,
+            async () => {},
+            (err) => {
+              console.log(err);
+              reject(err);
+            }
+          );
+        } catch (error) {
+          // console.log(error);
+          reject(error);
+        }
+        viewer.setTheme("light-theme");
+        viewer.setLightPreset(0);
+        resolve(viewer);
+      }
+    );
   });
+}

@@ -40,8 +40,9 @@ dependencies:
   markdown: ^7.1.1
   get_it: ^7.6.4
   event_bus: ^2.0.0
-  flutter_inappwebview: ^5.7.2+3
+  flutter_inappwebview: 6.0.0-beta.32
   webview_flutter: ^4.4.2
+  path_provider: ^2.1.1
   # flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
@@ -69,10 +70,16 @@ flutter:
   assets:
     - assets/svg/
     - assets/wwwroot/
-    - assets/wwwroot/manifest1/
-    - assets/js-forge-viewer/index.html
-    - assets/js-forge-viewer/main.js
-  #   - images/a_dot_ham.jpeg
+    - assets/wwwroot/resource/
+    - assets/wwwroot/resource/BATH_1/
+    - assets/wwwroot/resource/CL_1/
+    - assets/wwwroot/resource/CL_WI/
+    - assets/wwwroot/resource/ENTRY_HALL/
+    - assets/wwwroot/resource/KITCHEN/
+    - assets/wwwroot/resource/LAUNDRY/
+    - assets/wwwroot/resource/LIVING/
+    # - assets/js-forge-viewer/index.html
+    # - assets/js-forge-viewer/main.js
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

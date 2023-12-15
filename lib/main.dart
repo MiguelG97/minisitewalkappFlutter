@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:minisitewalkapp/core/utils/initialize_dependencies.dart';
-import 'package:minisitewalkapp/modules/home/screens/init_screen.dart';
+import 'package:minisitewalkapp/modules/unit_plans/screens/unit_plans.dart';
 
 void main() async {
   //required by flutter
   WidgetsFlutterBinding.ensureInitialized();
+
   //dependency injections
   await initialiseDependencies();
 
