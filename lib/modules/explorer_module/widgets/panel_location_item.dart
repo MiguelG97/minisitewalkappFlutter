@@ -7,9 +7,11 @@ class PanelLocationItem extends StatelessWidget {
   final double width;
   final Function() onPressed;
   final bool selected;
+  final String roomName;
   const PanelLocationItem(
       {super.key,
       required this.width,
+      required this.roomName,
       required this.onPressed,
       required this.selected});
 
@@ -42,7 +44,7 @@ class PanelLocationItem extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                "Kitchen",
+                roomName,
                 style: AppTextStyles.display16w500,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

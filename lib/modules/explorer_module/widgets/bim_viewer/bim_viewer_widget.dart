@@ -13,27 +13,17 @@ class BimViewerWidget extends StatefulWidget {
 class _BimViewerWidgetState extends State<BimViewerWidget> {
   InAppLocalhostServer localServer =
       InAppLocalhostServer(); //documentRoot: "./" leave it like that
-  dynamic jsonViewer;
 
   @override
   void initState() {
     //a) start local server
     startServer();
 
-    //b)read json viewer data
-    readJsonFile();
     super.initState();
   }
 
   startServer() async {
     await localServer.start();
-  }
-
-  readJsonFile() async {
-    String data =
-        await rootBundle.loadString("assets/wwwroot/resource/viewerDB.json");
-
-    jsonViewer = jsonDecode(data);
   }
 
   @override
