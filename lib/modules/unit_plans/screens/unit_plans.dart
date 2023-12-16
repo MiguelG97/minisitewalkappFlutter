@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class _InitScreenState extends State<InitScreen> {
 
     // storeAsssetBytes();
 
-    readAppDocDirFiles();
+    // readAppDocDirFiles();
     // getStoredFiles();
     // deleteFile();
     super.initState();

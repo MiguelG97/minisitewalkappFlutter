@@ -1,16 +1,78 @@
-// const sth = document.getElementById("preview");
-// sth.innerText = "hello from the main js file!!";
+//a)variables
+var isFlutterInAppWebViewReady = false;
+var docPath = "resource/Unit_Floor_Plan.pdf";
+var topViewer = null;
+var bottomViewer = null;
 
-function miguelfunction() {
-  console.log("hellor!!");
-}
+//
+document.getElementById("start").onclick =
+  async () => {
+    const args = [
+      "hello miguel x2 from js side!",
+    ];
+    const resVal =
+      await window.flutter_inappwebview.callHandler(
+        "test1",
+        ...args
+      );
+    console.log(resVal);
+  };
 
-initViewer(document.getElementById("preview"));
+//b) handlers!
+const onGeometryLoaded = (props) => {};
 
-function initViewer(container) {
+const onSelectionChanged = (dbi) => {
+  console.log(dbi);
+};
+
+const viewNavigationHandler = (
+  viewer,
+  container
+) => {
+  const viewPaths = [
+    // "./ResourceCharles3DTest/3D View/{3D} 360672/{3D}.svf",
+    "./ResourceCharles3DTest/Unit Floor Plan.pdf",
+    "./ResourceCharles3DTest/LIVING Level 1 - FLOOR PLAN.pdf",
+    "./ResourceCharles3DTest/LAUNDRY Level 1 - FLOOR PLAN.pdf",
+    "./ResourceCharles3DTest/KITCHEN Level 1 - ELEVATION 3.pdf",
+  ];
+
+  if (currentViewIndex < viewPaths.length - 1) {
+    currentViewIndex++;
+  } else {
+    currentViewIndex = 0;
+  }
+
+  options = {
+    ...options,
+    document: viewPaths[currentViewIndex],
+  };
+
+  viewer.unloadModel(viewer.model);
+  viewer.finish();
+  Autodesk.Viewing.Initializer(options, () => {
+    viewer = new Autodesk.Viewing.GuiViewer3D(
+      container,
+      config
+    );
+    viewer.start(options.document, options);
+    //add event listeners again!
+    viewer.addEventListener(
+      Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+      onGeometryLoaded
+    );
+    viewer.addEventListener(
+      Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+      onSelectionChanged
+    );
+  });
+};
+
+//c) triggers!
+function initViewer(container, docPath, viewer) {
   const options = {
     env: "Local",
-    document: "resource/Unit_Floor_Plan.pdf",
+    document: docPath,
   };
 
   return new Promise(function (resolve, reject) {
@@ -19,35 +81,39 @@ function initViewer(container) {
       function () {
         const config = {
           extensions: [
-            "Autodesk.DocumentBrowser",
+            // "Autodesk.DocumentBrowser",
           ],
         };
-        const viewer =
-          new Autodesk.Viewing.GuiViewer3D(
-            container,
-            config
-          );
+        viewer = new Autodesk.Viewing.GuiViewer3D(
+          container,
+          config
+        );
 
-        try {
-          //START: it initialize the viewer and loads extensions
-          //It also loads any model if passed any!
-          const startedCode = viewer.start(
-            options.document,
-            options,
-            async () => {},
-            (err) => {
-              console.log(err);
-              reject(err);
-            }
-          );
-        } catch (error) {
-          // console.log(error);
-          reject(error);
-        }
+        viewer.start(options.document, options);
+        viewer.addEventListener(
+          Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+          onGeometryLoaded
+        );
+        viewer.addEventListener(
+          Autodesk.Viewing
+            .SELECTION_CHANGED_EVENT,
+          onSelectionChanged
+        );
         viewer.setTheme("light-theme");
         viewer.setLightPreset(0);
         resolve(viewer);
       }
     );
+
+    // document.getElementById("nextview").onclick =
+    // viewNavigationHandler;
   });
 }
+
+//flutter event listener
+window.addEventListener(
+  "flutterInAppWebViewPlatformReady",
+  function (event) {
+    isFlutterInAppWebViewReady = true;
+  }
+);

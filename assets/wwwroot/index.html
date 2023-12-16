@@ -20,13 +20,16 @@
       type="text/css"
       href="./main.css"
     />
-    <title>
-      Autodesk Platform Services: Simple Viewer
-    </title>
+    <title>Tailobird Viewer</title>
   </head>
 
   <body>
-    <div id="preview"></div>
+    <div id="viewcontainer">
+      <div id="topViewer" class="viewer"></div>
+      <!-- we need to add viewer class to the bottomViewer! when initializing 2 views navigation -->
+      <div id="bottomViewer"></div>
+    </div>
+    <button id="start">start it</button>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js"></script>
     <!-- <script src="./viewer3d.js"></script> -->
     <script src="./main.js"></script>

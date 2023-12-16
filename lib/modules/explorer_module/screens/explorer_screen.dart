@@ -18,6 +18,8 @@ class ExplorerScreen extends StatefulWidget {
 }
 
 class _ExplorerScreenState extends State<ExplorerScreen> {
+  bool roomPanelCollapsed = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +67,9 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
                 BimViewerWidget(),
                 Positioned(
                     child: LocationsPanel(
-                        defaultCollapsed: true, isFloating: true)),
+                  defaultCollapsed: true,
+                  isFloating: true,
+                )),
                 VerticalDivider(
                   thickness: 1,
                   width: 1,
