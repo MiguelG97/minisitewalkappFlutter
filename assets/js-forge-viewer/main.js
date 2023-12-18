@@ -54,7 +54,7 @@ function initViewer(container) {
             config
           );
         viewer.start();
-        viewer.setTheme("light-theme");
+        // viewer.setTheme("light-theme");
         resolve(viewer);
       }
     );

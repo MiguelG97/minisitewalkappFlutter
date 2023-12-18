@@ -51,10 +51,11 @@ const viewNavigationHandler = (
   viewer.unloadModel(viewer.model);
   viewer.finish();
   Autodesk.Viewing.Initializer(options, () => {
-    viewer = new Autodesk.Viewing.GuiViewer3D(
-      container,
-      config
-    );
+    viewer =
+      new Autodesk.Viewing.Private.GuiViewer3D(
+        container,
+        config
+      );
     viewer.start(options.document, options);
     //add event listeners again!
     viewer.addEventListener(
@@ -84,10 +85,11 @@ function initViewer(container, docPath, viewer) {
             // "Autodesk.DocumentBrowser",
           ],
         };
-        viewer = new Autodesk.Viewing.GuiViewer3D(
-          container,
-          config
-        );
+        viewer =
+          new Autodesk.Viewing.Private.GuiViewer3D(
+            container,
+            config
+          );
 
         viewer.start(options.document, options);
         viewer.addEventListener(
@@ -99,7 +101,7 @@ function initViewer(container, docPath, viewer) {
             .SELECTION_CHANGED_EVENT,
           onSelectionChanged
         );
-        viewer.setTheme("light-theme");
+        // viewer.setTheme("light-theme");
         viewer.setLightPreset(0);
         resolve(viewer);
       }

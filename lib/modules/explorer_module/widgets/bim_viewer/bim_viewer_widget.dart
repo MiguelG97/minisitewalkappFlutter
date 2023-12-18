@@ -46,6 +46,7 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
       },
       onLoadStop: (controller, url) {
         //1) here we trigger the first view initialization!!
+        print("we are here miguel");
         String unitFloorPlanPath =
             '"resource/Unit_Floor_Plan.pdf"'; //initial path!
         controller.evaluateJavascript(

@@ -9,6 +9,7 @@ import 'package:minisitewalkapp/core/presentation/atoms/round_rectangale_chip.da
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/app_bar/app_bar_how_to_use.dart';
+import 'package:minisitewalkapp/modules/explorer_module/widgets/bim_viewer/bim_viewer_webview.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/bim_viewer/bim_viewer_widget.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/check_items_measurements_view.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/explorer_header.dart';
@@ -88,15 +89,15 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
                     width: 1,
                     color: AppColors.dividerColor,
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      child: CheckItemsAndMeasurementsView(
-                        onFinishClicked: () {},
-                      ),
-                    ),
-                  )
+                  // Align(
+                  //   alignment: Alignment.centerRight,
+                  //   child: SizedBox(
+                  //     width: MediaQuery.of(context).size.width * 0.3,
+                  //     child: CheckItemsAndMeasurementsView(
+                  //       onFinishClicked: () {},
+                  //     ),
+                  //   ),
+                  // )
                 ],
               ))
             ],
