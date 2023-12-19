@@ -1,28 +1,59 @@
 //a)variables
 var isFlutterInAppWebViewReady = false;
-var docPath = "resource/Unit_Floor_Plan.pdf";
+// var docPath = "resource/Unit_Floor_Plan.pdf";
 var topViewer = null;
 var bottomViewer = null;
-
-//
-document.getElementById("start").onclick =
-  async () => {
-    const args = [
-      "hello miguel x2 from js side!",
-    ];
-    const resVal =
-      await window.flutter_inappwebview.callHandler(
-        "test1",
-        ...args
-      );
-    console.log(resVal);
-  };
 
 //b) handlers!
 const onGeometryLoaded = (props) => {};
 
-const onSelectionChanged = (dbi) => {
-  console.log(dbi);
+const onTopBottomSelectionChanged = () => {
+  const id = dbi.dbIdArray[0];
+  console.log(id);
+};
+
+const onFirstSelectionChanged = async (dbi) => {
+  const id = dbi.dbIdArray[0];
+
+  if (!isFlutterInAppWebViewReady) return;
+
+  //a) receive the views to display from flutter side
+  const viewElv =
+    await window.flutter_inappwebview.callHandler(
+      "roomSelected",
+      id
+    );
+  console.log(viewElv);
+
+  //b) display 2 viewers
+  const topContainer =
+    document.getElementById("topViewer");
+  const bottomContainer = document.getElementById(
+    "bottomViewer"
+  );
+  if (
+    bottomContainer.classList.contains(
+      "viewer"
+    ) === false
+  ) {
+    bottomContainer.classList.add("viewer");
+    console.log("bottom viewer added!");
+  }
+  // bottomContainer.className = "viewer";
+
+  topViewer.unloadModel(topViewer.model);
+  topViewer.finish();
+  initTopViewer(
+    topContainer,
+    "resource/46_HARRISON_SQUARE/KITCHEN/KITCHEN_Level_1_-_ELEVATION_1.pdf",
+    onTopBottomSelectionChanged
+  );
+  initBottomViewer(
+    bottomContainer,
+    "resource/46_HARRISON_SQUARE/KITCHEN/KITCHEN_Level_1_-_FLOOR_PLAN.pdf",
+
+    onTopBottomSelectionChanged
+  );
 };
 
 const viewNavigationHandler = (
@@ -70,7 +101,11 @@ const viewNavigationHandler = (
 };
 
 //c) triggers!
-function initViewer(container, docPath, viewer) {
+function initTopViewer(
+  container,
+  docPath,
+  onselCallback
+) {
   const options = {
     env: "Local",
     document: docPath,
@@ -85,25 +120,78 @@ function initViewer(container, docPath, viewer) {
             // "Autodesk.DocumentBrowser",
           ],
         };
-        viewer =
+        //we are passing topviewer from the flutter side!
+        topViewer =
           new Autodesk.Viewing.Private.GuiViewer3D(
             container,
             config
-          );
+          ); //I used private since a github repo placed that word and it works with the local js files stored too
 
-        viewer.start(options.document, options);
-        viewer.addEventListener(
+        topViewer.start(
+          options.document,
+          options
+        );
+        topViewer.addEventListener(
           Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
           onGeometryLoaded
         );
-        viewer.addEventListener(
+        topViewer.addEventListener(
           Autodesk.Viewing
             .SELECTION_CHANGED_EVENT,
-          onSelectionChanged
+          onselCallback
         );
         // viewer.setTheme("light-theme");
-        viewer.setLightPreset(0);
-        resolve(viewer);
+        topViewer.setLightPreset(0);
+        resolve(topViewer);
+      }
+    );
+
+    // document.getElementById("nextview").onclick =
+    // viewNavigationHandler;
+  });
+}
+function initBottomViewer(
+  container,
+  docPath,
+  onselCallback
+) {
+  const options = {
+    env: "Local",
+    document: docPath,
+  };
+
+  return new Promise(function (resolve, reject) {
+    Autodesk.Viewing.Initializer(
+      options,
+      function () {
+        const config = {
+          extensions: [
+            // "Autodesk.DocumentBrowser",
+          ],
+        };
+        //we are passing topviewer from the flutter side!
+        bottomViewer =
+          new Autodesk.Viewing.Private.GuiViewer3D(
+            container,
+            config
+          ); //I used private since a github repo placed that word and it works with the local js files stored too
+
+        bottomViewer.start(
+          options.document,
+          options
+        );
+        bottomViewer.addEventListener(
+          Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+          onGeometryLoaded
+        );
+        bottomViewer.addEventListener(
+          Autodesk.Viewing
+            .SELECTION_CHANGED_EVENT,
+          onselCallback
+        );
+        // viewer.setTheme("light-theme");
+        bottomViewer.setLightPreset(0);
+        resolve(bottomViewer);
       }
     );
 

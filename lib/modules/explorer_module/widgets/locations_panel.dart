@@ -6,6 +6,7 @@ import 'package:minisitewalkapp/core/constants/app_colors.dart';
 import 'package:minisitewalkapp/core/constants/app_text_styles.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart';
+import 'package:minisitewalkapp/modules/explorer_module/models/room_model.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/panel_location_item.dart';
 
 class LocationsPanel extends StatefulWidget {
@@ -77,11 +78,11 @@ class _LocationsPanelState extends State<LocationsPanel> {
                             physics: const ClampingScrollPhysics(),
                             padding: const EdgeInsets.only(bottom: 16),
                             itemBuilder: (c, index) {
-                              dynamic roomItem = roomItems[index];
+                              Room roomItem = roomItems[index];
 
                               return PanelLocationItem(
                                 key: Key('PanelLocationItem Miguel?'),
-                                roomName: roomItem["name"],
+                                roomName: roomItem.name,
                                 selected: true,
                                 width: _locationWidth,
                                 onPressed: () {

@@ -75,17 +75,18 @@ flutter:
     - assets/wwwroot/extensions/MixpanelProvider/
     - assets/wwwroot/extensions/PDF/
     - assets/wwwroot/extensions/CompGeom/
+    - assets/wwwroot/res/fonts/
     - assets/wwwroot/res/ui/
     - assets/wwwroot/res/locales/en/
     - assets/wwwroot/res/environments/
-    - assets/wwwroot/resource/
-    - assets/wwwroot/resource/BATH_1/
-    - assets/wwwroot/resource/CL_1/
-    - assets/wwwroot/resource/CL_WI/
-    - assets/wwwroot/resource/ENTRY_HALL/
-    - assets/wwwroot/resource/KITCHEN/
-    - assets/wwwroot/resource/LAUNDRY/
-    - assets/wwwroot/resource/LIVING/
+    - assets/wwwroot/resource/46_HARRISON_SQUARE/
+    - assets/wwwroot/resource/46_HARRISON_SQUARE/BATH_1/
+    - assets/wwwroot/resource/46_HARRISON_SQUARE/CL_1/
+    - assets/wwwroot/resource/46_HARRISON_SQUARE/CL_WI/
+    - assets/wwwroot/resource/46_HARRISON_SQUARE/ENTRY_HALL/
+    - assets/wwwroot/resource/46_HARRISON_SQUARE/KITCHEN/
+    - assets/wwwroot/resource/46_HARRISON_SQUARE/LAUNDRY/
+    - assets/wwwroot/resource/46_HARRISON_SQUARE/LIVING/
     # - assets/js-forge-viewer/index.html
     # - assets/js-forge-viewer/main.js
 

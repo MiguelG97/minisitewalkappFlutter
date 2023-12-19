@@ -5,6 +5,7 @@ import 'package:minisitewalkapp/core/constants/app_text_styles.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_events.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart';
+import 'package:minisitewalkapp/modules/explorer_module/models/autodesk_categories.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/categroy_card.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/complete_inspection_button.dart';
 
@@ -89,9 +90,11 @@ class _CheckItemsAndMeasurementsViewState
                       key: Key('today'),
                       controller: scrollController,
                       itemBuilder: (context, index) {
-                        dynamic roomCategory = roomCategories[index];
+                        AutodeskCategory roomCategory = roomCategories[index];
+                        //only return the list of categories visible in the views!!
+
                         return CategoryCard(
-                          headerText: roomCategory["categoryName"],
+                          headerText: roomCategory.categoryName,
                         );
                       },
                       itemCount: roomCategories.length,

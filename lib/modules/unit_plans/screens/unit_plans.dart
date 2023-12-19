@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:minisitewalkapp/core/constants/app_colors.dart';
 import 'package:minisitewalkapp/core/constants/asset_paths.dart';
@@ -16,6 +17,9 @@ import 'package:minisitewalkapp/core/presentation/molecules/search_with_filter/s
 import 'package:minisitewalkapp/core/presentation/molecules/table_base.dart';
 import 'package:minisitewalkapp/core/presentation/molecules/text_14_grey_500_icon.dart';
 import 'package:minisitewalkapp/modules/explorer_module/screens/explorer_screen.dart';
+import 'package:minisitewalkapp/modules/unit_plans/bloc/unit_bloc.dart';
+import 'package:minisitewalkapp/modules/unit_plans/bloc/unit_events.dart';
+import 'package:minisitewalkapp/modules/unit_plans/bloc/unit_states.dart';
 
 import 'package:minisitewalkapp/modules/unit_plans/constants/inspection_phase_const.dart';
 
@@ -98,7 +102,9 @@ class _InitScreenState extends State<InitScreen> {
     } catch (e) {}
   }
 
-  List<UnitPlan> units = [UnitPlan(projectName: "46_HARRISON SQUARE")];
+  List<UnitPlan> units = [
+    UnitPlan(projectName: "46_HARRISON SQUARE", assetPath: "46_HARRISON_SQUARE")
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -116,149 +122,170 @@ class _InitScreenState extends State<InitScreen> {
           )
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(children: [
-                const Text(
-                  "My Projects",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.black,
-                  ),
-                )
-              ]),
-              const SizedBox(
-                height: 24,
-              ),
-              SearchBarWithFilter(
-                searchBarHintText: 'Seach by project name',
-                filterFields: InspectionPhaseConst.filterSearch,
-                onFilterSelected: (data) {
-                  //                   BlocProvider.of<InspectionPhaseBloc>(context).add(
-                  //   InspectionPhaseFilterSelected(
-                  //     InspectionPhaseUtil.getFilterSearchModel(data),
-                  //   ),
-                  // );
-                },
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              Row(
-                children: [
-                  const TableBaseCell(
-                      flex: 6,
-                      cell: Text(
-                        "Project name",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.grey,
+      body: BlocProvider(
+        create: (context) {
+          return UnitBloc();
+        },
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(children: [
+                  const Text(
+                    "My Projects",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.black,
+                    ),
+                  )
+                ]),
+                const SizedBox(
+                  height: 24,
+                ),
+                SearchBarWithFilter(
+                  searchBarHintText: 'Seach by project name',
+                  filterFields: InspectionPhaseConst.filterSearch,
+                  onFilterSelected: (data) {
+                    //                   BlocProvider.of<InspectionPhaseBloc>(context).add(
+                    //   InspectionPhaseFilterSelected(
+                    //     InspectionPhaseUtil.getFilterSearchModel(data),
+                    //   ),
+                    // );
+                  },
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Row(
+                  children: [
+                    const TableBaseCell(
+                        flex: 6,
+                        cell: Text(
+                          "Project name",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.grey,
+                          ),
+                        )),
+                    TableBaseCell(
+                        flex: 3,
+                        cell: Text(
+                          "Organization",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.grey,
+                          ),
+                        )),
+                    TableBaseCell(
+                      flex: 4,
+                      cell: Text14grey500Icon(
+                        'Inspection Phase',
+                        icon: InkWell(
+                          onTap: () {
+                            DialogueMarkdown.show(
+                              context,
+                              title: 'How to use ?',
+                              body: InspectionPhaseConst.howToUse,
+                            );
+                          },
+                          child: const Icon(
+                            Icons.info_outline,
+                            color: AppColors.greyIcon,
+                          ),
                         ),
-                      )),
-                  TableBaseCell(
-                      flex: 3,
-                      cell: Text(
-                        "Organization",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.grey,
-                        ),
-                      )),
-                  TableBaseCell(
-                    flex: 4,
-                    cell: Text14grey500Icon(
-                      'Inspection Phase',
-                      icon: InkWell(
+                      ),
+                    ),
+                    TableBaseCell(
+                      flex: 4,
+                      cell: InkWell(
                         onTap: () {
-                          DialogueMarkdown.show(
-                            context,
-                            title: 'How to use ?',
-                            body: InspectionPhaseConst.howToUse,
+                          // BlocProvider.of<InspectionPhaseBloc>(context).add(
+                          //   InspectionPhaseFilterSelected(
+                          //     InspectionPhaseUtil.getFilterSearchModel(
+                          //       InspectionPhaseConst.inspectionDueDate,
+                          //     ),
+                          //   ),
+                          // );
+                        },
+                        child: const Text14grey500Icon(
+                          'Due date',
+                          icon: IcSort(),
+                        ),
+                      ),
+                    ),
+                    TableBaseCell(
+                      flex: 2,
+                      cell: InkWell(
+                        onTap: () {
+                          // BlocProvider.of<InspectionPhaseBloc>(context).add(
+                          //   InspectionPhaseFilterSelected(
+                          //     InspectionPhaseUtil.getFilterSearchModel(
+                          //       InspectionPhaseConst.inspectionStatus,
+                          //     ),
+                          //   ),
+                          // );
+                        },
+                        child: const Text14grey500Icon(
+                          'Status',
+                          icon: IcSort(),
+                        ),
+                      ),
+                    ),
+                    const TableBaseCell(
+                      cell: Text14grey500('Notes'),
+                    ),
+                  ],
+                ),
+                VSpace.h16(),
+                Expanded(child: BlocBuilder<UnitBloc, UnitState>(
+                  builder: (context, state) {
+                    return ListView.separated(
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              //pass the unitplan selected!
+                              UnitBloc unitbloc = context.read<UnitBloc>();
+                              unitbloc.add(
+                                  UnitSelectionStarted(unitplan: units[index]));
+
+                              //pass the bloc to new screen, how is it done??
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) {
+                                    return BlocProvider.value(
+                                      value: BlocProvider.of<UnitBloc>(context),
+                                      child: ExplorerScreen(
+                                        unitItem: units[index],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: 30,
+                              child: Row(children: [
+                                TableBaseCell(
+                                  flex: 6,
+                                  cell: Text14grey500(units[index].projectName),
+                                )
+                              ]),
+                            ),
                           );
                         },
-                        child: const Icon(
-                          Icons.info_outline,
-                          color: AppColors.greyIcon,
-                        ),
-                      ),
-                    ),
-                  ),
-                  TableBaseCell(
-                    flex: 4,
-                    cell: InkWell(
-                      onTap: () {
-                        // BlocProvider.of<InspectionPhaseBloc>(context).add(
-                        //   InspectionPhaseFilterSelected(
-                        //     InspectionPhaseUtil.getFilterSearchModel(
-                        //       InspectionPhaseConst.inspectionDueDate,
-                        //     ),
-                        //   ),
-                        // );
-                      },
-                      child: const Text14grey500Icon(
-                        'Due date',
-                        icon: IcSort(),
-                      ),
-                    ),
-                  ),
-                  TableBaseCell(
-                    flex: 2,
-                    cell: InkWell(
-                      onTap: () {
-                        // BlocProvider.of<InspectionPhaseBloc>(context).add(
-                        //   InspectionPhaseFilterSelected(
-                        //     InspectionPhaseUtil.getFilterSearchModel(
-                        //       InspectionPhaseConst.inspectionStatus,
-                        //     ),
-                        //   ),
-                        // );
-                      },
-                      child: const Text14grey500Icon(
-                        'Status',
-                        icon: IcSort(),
-                      ),
-                    ),
-                  ),
-                  const TableBaseCell(
-                    cell: Text14grey500('Notes'),
-                  ),
-                ],
-              ),
-              VSpace.h16(),
-              Expanded(
-                  child: ListView.separated(
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) {
-                                return ExplorerScreen(unitItem: units[index]);
-                              },
-                            ));
-                          },
-                          child: Container(
-                            height: 30,
-                            child: Row(children: [
-                              TableBaseCell(
-                                flex: 6,
-                                cell: Text14grey500(units[index].projectName),
-                              )
-                            ]),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return VSpace.h16();
-                      },
-                      itemCount: units.length))
-            ],
+                        separatorBuilder: (context, index) {
+                          return VSpace.h16();
+                        },
+                        itemCount: units.length);
+                  },
+                ))
+              ],
+            ),
           ),
         ),
       ),

@@ -4,21 +4,38 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_events.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart';
+import 'package:minisitewalkapp/modules/explorer_module/models/autodesk_categories.dart';
+import 'package:minisitewalkapp/modules/explorer_module/models/autodesk_views.dart';
+import 'package:minisitewalkapp/modules/explorer_module/models/room_model.dart';
+import 'package:minisitewalkapp/modules/unit_plans/models/unit_plan.dart';
 
 class ViewerBloc extends Bloc<ViewerEvent, ViewerState> {
-  ViewerBloc() : super(ViewNotInitialized()) {
+  late UnitPlan unitPlan;
+  late String data;
+  late List<Room> roomItems;
+  late List<AutodeskCategory> roomCategories;
+  late List<AutodeskView> autodeskViews;
+  ViewerBloc({unitplan}) : super(ViewNotInitialized()) {
+    unitPlan = unitplan;
     on<ViewerPreInitializedScreen>(onViewPreInitialized);
 
     add(ViewerPreInitializedScreen());
   }
   onViewPreInitialized(
       ViewerPreInitializedScreen event, Emitter<ViewerState> emit) async {
-    String data =
-        await rootBundle.loadString("assets/wwwroot/resource/viewerDB.json");
+    data = await rootBundle.loadString(
+        "assets/wwwroot/resource/${unitPlan.assetPath}/viewerDB.json");
 
-    dynamic jsonViewer = jsonDecode(data);
-    List<dynamic> roomItems = jsonViewer["rooms"];
-    List<dynamic> roomCategories = jsonViewer["autodeskCategories"];
+    Map<String, dynamic> jsonViewer = jsonDecode(data);
+    roomItems = List<Room>.from(
+        jsonViewer["rooms"]!.map((json) => Room.fromJson(json)));
+
+    roomCategories = List<AutodeskCategory>.from(
+        jsonViewer["autodeskCategories"]!
+            .map((json) => AutodeskCategory.fromJson(json)));
+    autodeskViews = List<AutodeskView>.from(jsonViewer["autodeskViews"]!
+        .map((json) => AutodeskView.fromJson(json)));
+    ;
     emit(ViewPreInitialized(
         roomItems: roomItems, roomCategories: roomCategories));
   }

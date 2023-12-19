@@ -1,4 +1,5 @@
 class UnitPlan {
   String projectName;
-  UnitPlan({required this.projectName});
+  String assetPath;
+  UnitPlan({required this.projectName, required this.assetPath});
 }

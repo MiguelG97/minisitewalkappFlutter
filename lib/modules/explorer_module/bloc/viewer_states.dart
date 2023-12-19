@@ -1,10 +1,13 @@
+import 'package:minisitewalkapp/modules/explorer_module/models/autodesk_categories.dart';
+import 'package:minisitewalkapp/modules/explorer_module/models/room_model.dart';
+
 abstract class ViewerState {}
 
 class ViewNotInitialized extends ViewerState {}
 
 class ViewPreInitialized extends ViewerState {
-  List<dynamic> roomItems;
-  List<dynamic> roomCategories;
+  List<Room> roomItems;
+  List<AutodeskCategory> roomCategories;
   bool isLandingPage = true;
   ViewPreInitialized({required this.roomItems, required this.roomCategories});
 }

@@ -14,6 +14,8 @@ import 'package:minisitewalkapp/modules/explorer_module/widgets/bim_viewer/bim_v
 import 'package:minisitewalkapp/modules/explorer_module/widgets/check_items_measurements_view.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/explorer_header.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/locations_panel.dart';
+import 'package:minisitewalkapp/modules/unit_plans/bloc/unit_bloc.dart';
+import 'package:minisitewalkapp/modules/unit_plans/bloc/unit_states.dart';
 import 'package:minisitewalkapp/modules/unit_plans/models/unit_plan.dart';
 
 class ExplorerScreen extends StatefulWidget {
@@ -25,10 +27,14 @@ class ExplorerScreen extends StatefulWidget {
 }
 
 class _ExplorerScreenState extends State<ExplorerScreen> {
+  late UnitPlan selectedUnitPlan;
   @override
   void initState() {
     // TODO: implement initState
 
+    UnitBloc unitBloc = context.read<UnitBloc>();
+
+    selectedUnitPlan = unitBloc.currentUnitplan;
     super.initState();
   }
 
@@ -37,7 +43,7 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ViewerBloc>(
-          create: (context) => ViewerBloc(),
+          create: (context) => ViewerBloc(unitplan: selectedUnitPlan),
         )
       ],
       child: Scaffold(
@@ -53,11 +59,23 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               //when location selected, add the location room to the leading description
-              RichText(
-                  text: TextSpan(
-                      text: widget.unitItem.projectName,
-                      children: [TextSpan(text: " / kitchen")],
-                      style: AppTextStyles.display18w700)),
+              BlocBuilder<UnitBloc, UnitState>(
+                // bloc: UnitBloc(),
+                builder: (context, state) {
+                  String prjName = "";
+                  if (state is UnitSelectionInProgress) {
+                    prjName = state.unitPlan.projectName;
+                  }
+
+                  return RichText(
+                    text: TextSpan(
+                        // text: widget.unitItem.projectName,
+                        text: prjName,
+                        children: [TextSpan(text: " / kitchen")],
+                        style: AppTextStyles.display18w700),
+                  );
+                },
+              ),
               SizedBox(
                 width: 8,
               ),
