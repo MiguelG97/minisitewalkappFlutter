@@ -12,4 +12,8 @@ class ViewPreInitialized extends ViewerState {
   ViewPreInitialized({required this.roomItems, required this.roomCategories});
 }
 
+class ViewDisplayingElev extends ViewerState {
+  bool forceToHide = true;
+}
+
 class RoomPanelOpened extends ViewerState {}

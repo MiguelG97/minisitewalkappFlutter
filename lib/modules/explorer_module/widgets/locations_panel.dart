@@ -26,6 +26,7 @@ class _LocationsPanelState extends State<LocationsPanel> {
   final _locationWidth = 248.0;
   bool _hidden = true; //panel hidden
   late double _translateX;
+  List<Room> roomItems = [];
   @override
   void initState() {
     // TODO: implement initState
@@ -38,8 +39,6 @@ class _LocationsPanelState extends State<LocationsPanel> {
     return BlocBuilder<ViewerBloc, ViewerState>(
       // bloc: BlocProvider.of(context),
       builder: (context, state) {
-        List<dynamic> roomItems = [];
-
         //a) load data and open the room panel
         if (state is ViewPreInitialized) {
           // _togglePanel();//can not call set state if its triggered by a bloc state builder!
@@ -48,6 +47,13 @@ class _LocationsPanelState extends State<LocationsPanel> {
             _hidden = !_hidden;
             _translateX = _hidden ? -_width : 0;
             state.isLandingPage = false;
+          }
+        } else if (state is ViewDisplayingElev) {
+          //force it to hide it
+          if (state.forceToHide == true) {
+            _hidden = true;
+            _translateX = _hidden ? -_width : 0;
+            state.forceToHide = false;
           }
         }
 

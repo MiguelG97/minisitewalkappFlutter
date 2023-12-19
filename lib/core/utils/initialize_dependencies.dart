@@ -2,7 +2,7 @@ import 'package:event_bus/event_bus.dart';
 import 'package:minisitewalkapp/core/wrappers/injector.dart';
 
 Future<void> initialiseDependencies() async {
-  DI().getIt.registerSingleton<EventBus>(EventBus());
+  // DI().getIt.registerSingleton<EventBus>(EventBus());
   // DI().getIt.registerSingleton<FlutterSecureStorage>(FlutterSecureStorage());
 
   // DI().registerSingleton<ApiClient>(ApiClientImpl());

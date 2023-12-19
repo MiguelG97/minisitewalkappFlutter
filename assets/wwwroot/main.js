@@ -23,9 +23,28 @@ const onFirstSelectionChanged = async (dbi) => {
       "roomSelected",
       id
     );
-  console.log(viewElv);
+  if (viewElv === "isnotaroom") return;
 
-  //b) display 2 viewers
+  //b) parse the data
+  const jsonData = JSON.parse(viewElv);
+  let roomName = jsonData["roomName"];
+  roomName = roomName.replace(/ /g, "_");
+
+  const floorPlan = JSON.parse(
+    jsonData["floorPlan"]
+  );
+  const floorPlanName = floorPlan["name"]; //floorPlan.name  works too!
+
+  const florPlanNamePath = floorPlanName.replace(
+    / /g,
+    "_"
+  );
+
+  const elevsArray = JSON.parse(
+    jsonData["elevations"]
+  );
+
+  //c) display 2 viewers
   const topContainer =
     document.getElementById("topViewer");
   const bottomContainer = document.getElementById(
@@ -37,23 +56,51 @@ const onFirstSelectionChanged = async (dbi) => {
     ) === false
   ) {
     bottomContainer.classList.add("viewer");
-    console.log("bottom viewer added!");
   }
-  // bottomContainer.className = "viewer";
 
+  //d) show arrows and set handlers
+  const leftClassList = document.getElementById(
+    "arrow-left-container"
+  ).classList;
+  if (leftClassList.contains("hide-arrow")) {
+    leftClassList.remove("hide-arrow");
+    leftClassList.add("show-arrow");
+  }
+  const rightClassList = document.getElementById(
+    "arrow-right-container"
+  ).classList;
+  if (rightClassList.contains("hide-arrow")) {
+    rightClassList.remove("hide-arrow");
+    rightClassList.add("show-arrow");
+  }
+
+  //e) unload initial viewer
   topViewer.unloadModel(topViewer.model);
   topViewer.finish();
-  initTopViewer(
-    topContainer,
-    "resource/46_HARRISON_SQUARE/KITCHEN/KITCHEN_Level_1_-_ELEVATION_1.pdf",
-    onTopBottomSelectionChanged
-  );
-  initBottomViewer(
-    bottomContainer,
-    "resource/46_HARRISON_SQUARE/KITCHEN/KITCHEN_Level_1_-_FLOOR_PLAN.pdf",
 
-    onTopBottomSelectionChanged
-  );
+  //f) initialize the 2 viewers
+  try {
+    //"resource/46_HARRISON_SQUARE/KITCHEN/KITCHEN_Level_1_-_ELEVATION_1.pdf"
+    // console.log(elevsArray[0]);
+    let elvName = elevsArray[0]["name"];
+    // console.log(elvName);
+    elvName = elvName.replace(/ /g, "_");
+    const topPath = `resource/46_HARRISON_SQUARE/${roomName}/${elvName}.pdf`;
+    initTopViewer(
+      topContainer,
+      topPath,
+      onTopBottomSelectionChanged
+    );
+    //"resource/46_HARRISON_SQUARE/KITCHEN/KITCHEN_Level_1_-_FLOOR_PLAN.pdf"
+    const bottomPath = `resource/46_HARRISON_SQUARE/${roomName}/${florPlanNamePath}.pdf`;
+    initBottomViewer(
+      bottomContainer,
+      bottomPath,
+      onTopBottomSelectionChanged
+    );
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const viewNavigationHandler = (

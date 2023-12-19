@@ -15,8 +15,58 @@ html {
 }
 .viewer {
   height: 100%;
-  background-color: red;
 }
 .adsk-viewing-viewer {
   position: relative !important;
+}
+.adsk-control-group {
+  display: none !important;
+}
+
+#arrow-left-container {
+  position: absolute;
+  padding: 10px 14px 10px 14px;
+  top: 25vh;
+  left: 5vw;
+  width: 8px;
+  border-radius: 28px;
+  background-color: #cde7f7;
+  z-index: 2;
+  cursor: pointer;
+}
+
+#left-Icon {
+  border: solid #004d71;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+#arrow-right-container {
+  position: absolute;
+  padding: 10px 14px 10px 14px;
+  top: 25vh;
+  right: 5vw;
+  width: 8px;
+  border-radius: 28px;
+  background-color: #cde7f7;
+  z-index: 2;
+  cursor: pointer;
+}
+#right-Icon {
+  border: solid #004d71;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.hide-arrow {
+  display: none;
+}
+.show-arrow {
+  display: block;
 }

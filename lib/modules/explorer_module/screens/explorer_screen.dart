@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:minisitewalkapp/core/constants/app_colors.dart';
 import 'package:minisitewalkapp/core/constants/app_text_styles.dart';
 import 'package:minisitewalkapp/core/presentation/atoms/round_rectangale_chip.dart';
@@ -107,17 +108,35 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
                     width: 1,
                     color: AppColors.dividerColor,
                   ),
-                  // Align(
-                  //   alignment: Alignment.centerRight,
-                  //   child: SizedBox(
-                  //     width: MediaQuery.of(context).size.width * 0.3,
-                  //     child: CheckItemsAndMeasurementsView(
-                  //       onFinishClicked: () {},
-                  //     ),
-                  //   ),
-                  // )
                 ],
-              ))
+              )),
+              BlocBuilder<ViewerBloc, ViewerState>(
+                builder: (context, state) {
+                  if (state is ViewDisplayingElev) {
+                    return Row(
+                      children: [
+                        VerticalDivider(
+                          thickness: 1,
+                          width: 1,
+                          color: AppColors.dividerColor,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: CheckItemsAndMeasurementsView(
+                            onFinishClicked: () {},
+                          ),
+                        )
+                      ],
+                    );
+                  } else {
+                    return VerticalDivider(
+                      thickness: 0,
+                      width: 0,
+                      color: AppColors.dividerColor,
+                    );
+                  }
+                },
+              )
             ],
           ))
         ]),

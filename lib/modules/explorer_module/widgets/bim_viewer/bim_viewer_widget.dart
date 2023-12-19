@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_bloc.dart';
+import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_events.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart';
 import 'package:minisitewalkapp/modules/explorer_module/models/autodesk_views.dart';
 import 'package:minisitewalkapp/modules/explorer_module/models/room_model.dart';
@@ -16,19 +17,12 @@ class BimViewerWidget extends StatefulWidget {
 }
 
 class _BimViewerWidgetState extends State<BimViewerWidget> {
-  InAppLocalhostServer localServer =
-      InAppLocalhostServer(); //documentRoot: "./" leave it like that
+  // InAppLocalhostServer localServer =
+  //     InAppLocalhostServer(); //documentRoot: "./" leave it like that
 
   @override
   void initState() {
-    //a) start local server
-    startServer();
-
     super.initState();
-  }
-
-  startServer() async {
-    await localServer.start();
   }
 
   @override
@@ -53,9 +47,10 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
                 int dbId = arguments[0];
 
                 //search the list of views to display in forge viewers || and display 2 viewers
-                //ii) get the room
+                //ii) get the room (this can be null if it was selected another thing!)
                 Room theroom =
                     viewerBloc.roomItems.firstWhere((room) => room.id == dbId);
+                if (theroom == null) return "isnotaroom";
 
                 //iii) search the viewables in from the props
                 //wrong data! it's passing other floors and elevations!
@@ -81,12 +76,15 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
 
                 //encode the data to be sent to js side
                 Map<String, dynamic> jsonData = {
+                  "roomName": theroom.name,
                   "floorPlan": jsonEncode(floorPlan),
                   "elevations": jsonEncode(elevations)
                 };
-                return jsonEncode(jsonData);
 
                 //toggle the panel room
+                viewerBloc.add(ViewerElevationsDisplayed());
+
+                return jsonEncode(jsonData);
               },
             );
           },

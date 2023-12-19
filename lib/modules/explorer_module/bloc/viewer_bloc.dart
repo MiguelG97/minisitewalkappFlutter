@@ -18,6 +18,7 @@ class ViewerBloc extends Bloc<ViewerEvent, ViewerState> {
   ViewerBloc({unitplan}) : super(ViewNotInitialized()) {
     unitPlan = unitplan;
     on<ViewerPreInitializedScreen>(onViewPreInitialized);
+    on<ViewerElevationsDisplayed>(onViewerElevationsDisplayed);
 
     add(ViewerPreInitializedScreen());
   }
@@ -38,5 +39,10 @@ class ViewerBloc extends Bloc<ViewerEvent, ViewerState> {
     ;
     emit(ViewPreInitialized(
         roomItems: roomItems, roomCategories: roomCategories));
+  }
+
+  onViewerElevationsDisplayed(
+      ViewerElevationsDisplayed event, Emitter<ViewerState> emit) {
+    emit(ViewDisplayingElev());
   }
 }
