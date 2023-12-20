@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:minisitewalkapp/modules/explorer_module/bloc/checkMeasurements_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_events.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart';
@@ -31,6 +31,7 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
       builder: (context, state) {
         ViewerBloc viewerBloc = context.read<ViewerBloc>();
         UnitPlan selectedUnitPlan = viewerBloc.unitPlan;
+        CheckMeasureBloc checkMeasureBloc = context.read<CheckMeasureBloc>();
 
         return InAppWebView(
           onConsoleMessage: (controller, consoleMessage) {
@@ -40,6 +41,7 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
               url: WebUri.uri(Uri.parse(
                   "http://localhost:8080/assets/wwwroot/index.html"))),
           onWebViewCreated: (controller) {
+            viewerBloc.controller = controller;
             controller.addJavaScriptHandler(
               handlerName: "roomSelected",
               callback: (arguments) {
@@ -48,9 +50,11 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
 
                 //search the list of views to display in forge viewers || and display 2 viewers
                 //ii) get the room (this can be null if it was selected another thing!)
-                Room theroom =
-                    viewerBloc.roomItems.firstWhere((room) => room.id == dbId);
-                if (theroom == null) return "isnotaroom";
+                Room theroom = viewerBloc.roomItems.firstWhere(
+                  (room) => room.id == dbId,
+                  orElse: () => Room(name: "null", id: 40, props: []),
+                );
+                if (theroom.name == "null") return "isnotaroom";
 
                 //iii) search the viewables in from the props
                 //wrong data! it's passing other floors and elevations!
@@ -82,9 +86,46 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
                 };
 
                 //toggle the panel room
-                viewerBloc.add(ViewerElevationsDisplayed());
+                if (viewerBloc.elevsDisplayed == false) {
+                  viewerBloc.add(ViewerElevationsDisplayed());
+                  viewerBloc.elevsDisplayed = true;
+                }
 
                 return jsonEncode(jsonData);
+              },
+            );
+            controller.addJavaScriptHandler(
+              handlerName: "itemSelected",
+              callback: (arguments) async {
+                //i) get id
+                int dbId = arguments[0];
+                //ii) expand collapsable for right panel
+                checkMeasureBloc.add(ItemSelectedEvent(dbId: dbId));
+
+                String categoryName = "";
+                int indexCat = 0;
+                int indexItem = 0;
+                outerloop:
+                for (var category in viewerBloc.roomCategories) {
+                  indexItem = 0;
+                  for (var item in category.items) {
+                    if (item["viewables"].length > 0 && item["dbId"] == dbId) {
+                      break outerloop;
+                    }
+                    indexItem = indexItem + 1;
+                  }
+                  indexCat = indexCat + 1;
+                }
+                if (viewerBloc.categoryItemsPanelScroller != null) {
+                  await viewerBloc.categoryItemsPanelScroller.animateTo(
+                      indexCat * 58,
+                      duration: Duration(milliseconds: 400),
+                      curve: Curves.easeIn);
+                  // await viewerBloc.categoryItemsPanelScroller.animateTo(
+                  //     indexItem * 5,
+                  //     duration: Duration(milliseconds: 400),
+                  //     curve: Curves.easeIn);
+                }
               },
             );
           },

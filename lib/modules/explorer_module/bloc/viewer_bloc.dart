@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_events.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart';
 import 'package:minisitewalkapp/modules/explorer_module/models/autodesk_categories.dart';
@@ -15,6 +17,10 @@ class ViewerBloc extends Bloc<ViewerEvent, ViewerState> {
   late List<Room> roomItems;
   late List<AutodeskCategory> roomCategories;
   late List<AutodeskView> autodeskViews;
+  late InAppWebViewController controller;
+  late ScrollController categoryItemsPanelScroller;
+  bool elevsDisplayed = false;
+
   ViewerBloc({unitplan}) : super(ViewNotInitialized()) {
     unitPlan = unitplan;
     on<ViewerPreInitializedScreen>(onViewPreInitialized);
@@ -36,13 +42,14 @@ class ViewerBloc extends Bloc<ViewerEvent, ViewerState> {
             .map((json) => AutodeskCategory.fromJson(json)));
     autodeskViews = List<AutodeskView>.from(jsonViewer["autodeskViews"]!
         .map((json) => AutodeskView.fromJson(json)));
-    ;
+
     emit(ViewPreInitialized(
         roomItems: roomItems, roomCategories: roomCategories));
   }
 
   onViewerElevationsDisplayed(
       ViewerElevationsDisplayed event, Emitter<ViewerState> emit) {
-    emit(ViewDisplayingElev());
+    emit(ViewDisplayingElev(
+        roomItems: roomItems, roomCategories: roomCategories));
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:minisitewalkapp/core/constants/app_colors.dart';
 import 'package:minisitewalkapp/core/constants/app_text_styles.dart';
 import 'package:minisitewalkapp/core/presentation/atoms/round_rectangale_chip.dart';
+import 'package:minisitewalkapp/modules/explorer_module/bloc/checkMeasurements_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart';
 import 'package:minisitewalkapp/modules/explorer_module/widgets/app_bar/app_bar_how_to_use.dart';
@@ -45,6 +46,9 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
       providers: [
         BlocProvider<ViewerBloc>(
           create: (context) => ViewerBloc(unitplan: selectedUnitPlan),
+        ),
+        BlocProvider<CheckMeasureBloc>(
+          create: (context) => CheckMeasureBloc(),
         )
       ],
       child: Scaffold(
@@ -72,7 +76,7 @@ class _ExplorerScreenState extends State<ExplorerScreen> {
                     text: TextSpan(
                         // text: widget.unitItem.projectName,
                         text: prjName,
-                        children: [TextSpan(text: " / kitchen")],
+                        // children: [TextSpan(text: " / kitchen")],
                         style: AppTextStyles.display18w700),
                   );
                 },

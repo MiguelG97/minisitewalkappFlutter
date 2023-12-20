@@ -14,6 +14,9 @@ class ViewPreInitialized extends ViewerState {
 
 class ViewDisplayingElev extends ViewerState {
   bool forceToHide = true;
+  List<Room> roomItems;
+  List<AutodeskCategory> roomCategories;
+  ViewDisplayingElev({required this.roomItems, required this.roomCategories});
 }
 
 class RoomPanelOpened extends ViewerState {}

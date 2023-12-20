@@ -39,6 +39,8 @@ class _LocationsPanelState extends State<LocationsPanel> {
     return BlocBuilder<ViewerBloc, ViewerState>(
       // bloc: BlocProvider.of(context),
       builder: (context, state) {
+        ViewerBloc viewerBloc = context.read<ViewerBloc>();
+
         //a) load data and open the room panel
         if (state is ViewPreInitialized) {
           // _togglePanel();//can not call set state if its triggered by a bloc state builder!
@@ -92,6 +94,17 @@ class _LocationsPanelState extends State<LocationsPanel> {
                                 selected: true,
                                 width: _locationWidth,
                                 onPressed: () {
+                                  if (viewerBloc.controller != null &&
+                                      viewerBloc.roomItems != null) {
+                                    //get dbId from room item!
+                                    Room roomSelected = viewerBloc.roomItems
+                                        .firstWhere((room) =>
+                                            room.name == roomItem.name);
+
+                                    viewerBloc.controller.evaluateJavascript(
+                                        source:
+                                            "onFirstSelectionChanged(${roomSelected.id})");
+                                  }
                                   _togglePanel(); //on any room selection, hide the panel too!
                                 },
                               );

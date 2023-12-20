@@ -32,6 +32,8 @@ class _CheckItemsAndMeasurementsViewState
   @override
   void initState() {
     super.initState();
+    ViewerBloc viewerBloc = context.read<ViewerBloc>();
+    viewerBloc.categoryItemsPanelScroller = scrollController;
   }
 
   @override
@@ -81,20 +83,21 @@ class _CheckItemsAndMeasurementsViewState
                 child: BlocBuilder(
                   bloc: BlocProvider.of<ViewerBloc>(context),
                   builder: (context, state) {
-                    List<dynamic> roomCategories = [];
-                    if (state is ViewPreInitialized) {
+                    List<AutodeskCategory> roomCategories = [];
+                    if (state is ViewDisplayingElev) {
                       roomCategories = state.roomCategories;
                     }
 
                     return ListView.builder(
-                      key: Key('today'),
                       controller: scrollController,
+                      physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
                         AutodeskCategory roomCategory = roomCategories[index];
                         //only return the list of categories visible in the views!!
 
                         return CategoryCard(
-                          headerText: roomCategory.categoryName,
+                          headerText: roomCategory.categoryName.substring(6),
+                          items: roomCategory.items,
                         );
                       },
                       itemCount: roomCategories.length,

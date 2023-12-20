@@ -1,18 +1,73 @@
-import 'dart:math';
-
-import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minisitewalkapp/core/constants/app_colors.dart';
 import 'package:minisitewalkapp/core/constants/app_text_styles.dart';
 import 'package:minisitewalkapp/core/presentation/atoms/custom_switch.dart';
 import 'package:minisitewalkapp/core/presentation/atoms/custom_text_field.dart';
 
 class InspectionItemUI extends StatelessWidget {
-  const InspectionItemUI({super.key});
+  dynamic item;
+  List<String> booleanCat = [
+    "Revit Specialty Equipment",
+    "Revit Slab Edges",
+    "Revit Generic Models",
+    "Revit Plumbing Fixtures"
+  ];
+  List<String> numberCat = [
+    "Revit Dimensions",
+    "Revit Doors",
+    "Revit Casework",
+    "Revit Windows"
+  ];
+  String categoryName;
+  List<String> textCat = ["Revit Floors"];
+  InspectionItemUI({super.key, required this.item, required this.categoryName});
+  Map<String, dynamic> attributes = {};
 
   @override
   Widget build(BuildContext context) {
+    if (numberCat.any((element) => element.contains(categoryName))) {
+      List<dynamic> props = item["props"] as List<dynamic>;
+      switch (categoryName) {
+        case "Dimensions":
+          dynamic value =
+              props.firstWhere((element) => element["displayName"] == "Value");
+          attributes["Value"] = value["displayValue"];
+          break;
+        case "Doors":
+          dynamic height =
+              props.firstWhere((element) => element["displayName"] == "Height");
+          attributes["Height"] = height["displayValue"];
+          dynamic width =
+              props.firstWhere((element) => element["displayName"] == "Width");
+          attributes["Width"] = width["displayValue"];
+          break;
+        case "Casework":
+          try {
+            dynamic sheight = props.firstWhere(
+                (element) => element["displayName"] == "Shared Height");
+            attributes["Shared Height"] = sheight["displayValue"];
+            dynamic swidth = props.firstWhere(
+                (element) => element["displayName"] == "Shared Width");
+            attributes["Shared Width"] = swidth["displayValue"];
+            dynamic sdepth = props.firstWhere(
+                (element) => element["displayName"] == "Shared Depth");
+            attributes["Shared Depth"] = sdepth["displayValue"];
+          } catch (ex) {}
+        case "Windows":
+          dynamic height = props
+              .firstWhere((element) => element["displayName"] == "W_Height");
+          attributes["Height"] = height["displayValue"];
+          dynamic width = props
+              .firstWhere((element) => element["displayName"] == "W_Width");
+          attributes["Width"] = width["displayValue"];
+          dynamic sillHeight = props
+              .firstWhere((element) => element["displayName"] == "Sill Height");
+          attributes["Sill Height"] = sillHeight["displayValue"];
+          break;
+        default:
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -23,12 +78,12 @@ class InspectionItemUI extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'floors',
+                  item["name"],
                   style: AppTextStyles.display14w500,
                 ),
               ),
             ),
-            if (true)
+            if (booleanCat.any((element) => element.contains(categoryName)))
               _YesORNoWrapper(
                 initialValue: true,
                 elementID: "12393",
@@ -37,15 +92,15 @@ class InspectionItemUI extends StatelessWidget {
               )
           ],
         ),
-        // for (int index = 0;
-        //     index < entriesWithoutCountField.length;
-        //     index++) ...[
-        //   _AttributeWidget(
-        //     entity: entity,
-        //     entry: entriesWithoutCountField[index],
-        //     isFirstItem: !showRadio && index == 0,
-        //   )
-        // ],
+        //Properties!
+        if (attributes.isNotEmpty) ...[
+          for (String key in attributes.keys) ...[
+            _AttributeWidget(
+              entry: key,
+              value: attributes[key],
+            )
+          ]
+        ],
         Divider(
           height: 32,
           color: AppColors.dividerColor,
@@ -56,11 +111,11 @@ class InspectionItemUI extends StatelessWidget {
 }
 
 class _AttributeWidget extends StatelessWidget {
-  final MapEntry<String, dynamic> entry;
-  final bool isFirstItem;
-  const _AttributeWidget({
+  String entry;
+  dynamic value;
+  _AttributeWidget({
     required this.entry,
-    required this.isFirstItem,
+    required this.value,
   });
 
   @override
@@ -72,9 +127,9 @@ class _AttributeWidget extends StatelessWidget {
         SizedBox(
           height: 8,
         ),
-        if (entry.key != 'Value') ...[
+        if (true) ...[
           Text(
-            entry.key,
+            entry,
             style: AppTextStyles.display14w500,
           ),
           SizedBox(
@@ -82,8 +137,9 @@ class _AttributeWidget extends StatelessWidget {
           ),
         ],
         ItemDataField(
-          entry: entry,
-          isFirst: isFirstItem,
+          value: value is double
+              ? (value as double).toStringAsFixed(2)
+              : value.toString(),
         )
       ],
     );
@@ -91,13 +147,12 @@ class _AttributeWidget extends StatelessWidget {
 }
 
 class ItemDataField extends StatefulWidget {
-  final MapEntry<String, dynamic> entry;
-  final bool isFirst;
-  const ItemDataField(
-      {super.key,
-      required this.entry,
-      // required this.itemEntity,
-      this.isFirst = false});
+  String value;
+
+  ItemDataField({
+    super.key,
+    required this.value,
+  });
 
   @override
   State<ItemDataField> createState() => _ItemDataFieldState();
@@ -105,12 +160,9 @@ class ItemDataField extends StatefulWidget {
 
 class _ItemDataFieldState extends State<ItemDataField> {
   late TextEditingController controller =
-      TextEditingController(text: '${widget.entry.value}');
+      TextEditingController(text: '${widget.value}');
 
   final FocusNode focusNode = FocusNode();
-  late MapEntry<String, dynamic> localCopyOfEntry = widget.entry;
-
-  bool receivedBIMEvent = false;
 
   @override
   void initState() {
@@ -124,10 +176,10 @@ class _ItemDataFieldState extends State<ItemDataField> {
       child: CustomTextField(
         enabled: true,
         focusNode: focusNode,
-        key: Key('${localCopyOfEntry.key}_datafield'),
-        childKey: '${localCopyOfEntry.key}_datafield_child',
+        // key: Key('${"localCopyOfEntry.key"}_datafield'),
+        // childKey: '${"localCopyOfEntry.key"}_datafield_child',
         controller: controller,
-        hintText: 'Enter ${localCopyOfEntry.key}',
+        hintText: 'Enter value',
         inputType: TextInputType.text,
         fillColor: getColor(),
       ),

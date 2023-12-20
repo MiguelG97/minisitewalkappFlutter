@@ -1,19 +1,39 @@
 //a)variables
 var isFlutterInAppWebViewReady = false;
-// var docPath = "resource/Unit_Floor_Plan.pdf";
 var topViewer = null;
 var bottomViewer = null;
+let currentViewIndex = 0;
+let elevsPaths = [];
 
 //b) handlers!
-const onGeometryLoaded = (props) => {};
+const onGeometryLoaded = (props) => {
+  //for first page, we gotta paint the rooms!
+};
 
-const onTopBottomSelectionChanged = () => {
+const onTopBottomSelectionChanged = (dbi) => {
+  //here we gotta display an item in the right panel on selection
   const id = dbi.dbIdArray[0];
-  console.log(id);
+  //get element id!
+  if (id === null) return; //in case it was picked to the blank space!
+
+  window.flutter_inappwebview.callHandler(
+    "itemSelected",
+    id
+  );
 };
 
 const onFirstSelectionChanged = async (dbi) => {
-  const id = dbi.dbIdArray[0];
+  let id = null;
+  if (typeof dbi === "object") {
+    id = dbi.dbIdArray[0];
+  } else if (typeof dbi === "number") {
+    id = dbi;
+  } else if (
+    dbi === null ||
+    dbi.dbIdArray[0] === null
+  ) {
+    return; //for picking to the blank space!
+  }
 
   if (!isFlutterInAppWebViewReady) return;
 
@@ -35,7 +55,7 @@ const onFirstSelectionChanged = async (dbi) => {
   );
   const floorPlanName = floorPlan["name"]; //floorPlan.name  works too!
 
-  const florPlanNamePath = floorPlanName.replace(
+  const floorPlanNamePath = floorPlanName.replace(
     / /g,
     "_"
   );
@@ -59,6 +79,12 @@ const onFirstSelectionChanged = async (dbi) => {
   }
 
   //d) show arrows and set handlers
+  elevsPaths = elevsArray.map((elv) => {
+    let elvName = elv["name"];
+    elvName = elvName.replace(/ /g, "_");
+    return `resource/46_HARRISON_SQUARE/${roomName}/${elvName}.pdf`;
+  });
+
   const leftClassList = document.getElementById(
     "arrow-left-container"
   ).classList;
@@ -66,6 +92,25 @@ const onFirstSelectionChanged = async (dbi) => {
     leftClassList.remove("hide-arrow");
     leftClassList.add("show-arrow");
   }
+  document.getElementById(
+    "arrow-left-container"
+  ).onclick = () => {
+    topViewer.unloadModel(topViewer.model);
+    topViewer.finish();
+
+    if (currentViewIndex === 0) {
+      currentViewIndex = elevsPaths.length - 1;
+    } else {
+      currentViewIndex = currentViewIndex - 1;
+    }
+    const topPath = elevsPaths[currentViewIndex];
+    initTopViewer(
+      topContainer,
+      topPath,
+      onTopBottomSelectionChanged
+    );
+  };
+
   const rightClassList = document.getElementById(
     "arrow-right-container"
   ).classList;
@@ -73,6 +118,28 @@ const onFirstSelectionChanged = async (dbi) => {
     rightClassList.remove("hide-arrow");
     rightClassList.add("show-arrow");
   }
+  document.getElementById(
+    "arrow-right-container"
+  ).onclick = () => {
+    topViewer.unloadModel(topViewer.model);
+    topViewer.finish();
+
+    //when it's 0 pick 1, when it's 1 pick 2, ... when it's penultimate pick the last one, when it's the last pick the first!
+    if (
+      currentViewIndex <
+      elevsPaths.length - 1
+    ) {
+      currentViewIndex++;
+    } else {
+      currentViewIndex = 0;
+    }
+    const topPath = elevsPaths[currentViewIndex];
+    initTopViewer(
+      topContainer,
+      topPath,
+      onTopBottomSelectionChanged
+    );
+  };
 
   //e) unload initial viewer
   topViewer.unloadModel(topViewer.model);
@@ -80,19 +147,23 @@ const onFirstSelectionChanged = async (dbi) => {
 
   //f) initialize the 2 viewers
   try {
-    //"resource/46_HARRISON_SQUARE/KITCHEN/KITCHEN_Level_1_-_ELEVATION_1.pdf"
-    // console.log(elevsArray[0]);
-    let elvName = elevsArray[0]["name"];
-    // console.log(elvName);
-    elvName = elvName.replace(/ /g, "_");
-    const topPath = `resource/46_HARRISON_SQUARE/${roomName}/${elvName}.pdf`;
+    // let elvName = elevsArray[0]["name"];
+    // const topPath = `resource/46_HARRISON_SQUARE/${roomName}/${elvName}.pdf`;
+    const topPath = elevsPaths[currentViewIndex];
     initTopViewer(
       topContainer,
       topPath,
       onTopBottomSelectionChanged
     );
-    //"resource/46_HARRISON_SQUARE/KITCHEN/KITCHEN_Level_1_-_FLOOR_PLAN.pdf"
-    const bottomPath = `resource/46_HARRISON_SQUARE/${roomName}/${florPlanNamePath}.pdf`;
+
+    if (bottomViewer !== null) {
+      //for selections from the left panel!
+      bottomViewer.unloadModel(
+        bottomViewer.model
+      );
+      bottomViewer.finish();
+    }
+    const bottomPath = `resource/46_HARRISON_SQUARE/${roomName}/${floorPlanNamePath}.pdf`;
     initBottomViewer(
       bottomContainer,
       bottomPath,
@@ -101,50 +172,6 @@ const onFirstSelectionChanged = async (dbi) => {
   } catch (error) {
     console.log(error);
   }
-};
-
-const viewNavigationHandler = (
-  viewer,
-  container
-) => {
-  const viewPaths = [
-    // "./ResourceCharles3DTest/3D View/{3D} 360672/{3D}.svf",
-    "./ResourceCharles3DTest/Unit Floor Plan.pdf",
-    "./ResourceCharles3DTest/LIVING Level 1 - FLOOR PLAN.pdf",
-    "./ResourceCharles3DTest/LAUNDRY Level 1 - FLOOR PLAN.pdf",
-    "./ResourceCharles3DTest/KITCHEN Level 1 - ELEVATION 3.pdf",
-  ];
-
-  if (currentViewIndex < viewPaths.length - 1) {
-    currentViewIndex++;
-  } else {
-    currentViewIndex = 0;
-  }
-
-  options = {
-    ...options,
-    document: viewPaths[currentViewIndex],
-  };
-
-  viewer.unloadModel(viewer.model);
-  viewer.finish();
-  Autodesk.Viewing.Initializer(options, () => {
-    viewer =
-      new Autodesk.Viewing.Private.GuiViewer3D(
-        container,
-        config
-      );
-    viewer.start(options.document, options);
-    //add event listeners again!
-    viewer.addEventListener(
-      Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
-      onGeometryLoaded
-    );
-    viewer.addEventListener(
-      Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-      onSelectionChanged
-    );
-  });
 };
 
 //c) triggers!
@@ -192,9 +219,6 @@ function initTopViewer(
         resolve(topViewer);
       }
     );
-
-    // document.getElementById("nextview").onclick =
-    // viewNavigationHandler;
   });
 }
 function initBottomViewer(
