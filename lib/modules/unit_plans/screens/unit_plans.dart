@@ -42,7 +42,7 @@ class _InitScreenState extends State<InitScreen> {
     // storeAsssetBytes();
 
     // readAppDocDirFiles();
-    // getStoredFiles();
+    getStoredFiles();
     // deleteFile();
     super.initState();
   }
@@ -79,14 +79,14 @@ class _InitScreenState extends State<InitScreen> {
     List<FileSystemEntity> fileSystem = directory.listSync();
     for (FileSystemEntity entity in fileSystem) {
       if (entity is File) {
-        print(entity.path);
+        print("Miguel: " + entity.path);
       }
       //get nested files!
       else if (entity is Directory) {
         Directory dirEnt = entity as Directory;
         List<FileSystemEntity> subFileSyst = dirEnt.listSync();
         for (FileSystemEntity subEntity in subFileSyst) {
-          print(subEntity);
+          print("subfile: " + subEntity.path);
         }
       }
     }

@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:mime/mime.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/checkMeasurements_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_bloc.dart';
 import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_events.dart';
@@ -34,6 +36,11 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
         CheckMeasureBloc checkMeasureBloc = context.read<CheckMeasureBloc>();
 
         return InAppWebView(
+          // initialSettings: InAppWebViewSettings(
+          //     allowFileAccess: true,
+          //     allowContentAccess: true,
+          //     webViewAssetLoader: WebViewAssetLoader(
+          //         pathHandlers: [MyCustomPathHandler(path: "/")])),
           onConsoleMessage: (controller, consoleMessage) {
             print(consoleMessage.message);
           },
@@ -129,7 +136,7 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
               },
             );
           },
-          onLoadStop: (controller, url) {
+          onLoadStop: (controller, url) async {
             //1) here we trigger the first view initialization!!
             String unitFloorPlanPath =
                 '"resource/${selectedUnitPlan.assetPath}/Unit_Floor_Plan.pdf"'; //initial path!
@@ -140,5 +147,24 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
         );
       },
     );
+  }
+}
+
+class MyCustomPathHandler extends CustomPathHandler {
+  MyCustomPathHandler({required super.path});
+
+  @override
+  Future<WebResourceResponse?> handle(String path) async {
+    try {
+      final assetPath = path.replaceFirst("/assets/wwwroot", "");
+      final data = await rootBundle.load(assetPath);
+      return WebResourceResponse(
+        contentType: lookupMimeType(path),
+        data: data.buffer.asUint8List(),
+      );
+    } catch (e) {
+      print(e);
+    }
+    return WebResourceResponse(data: null);
   }
 }

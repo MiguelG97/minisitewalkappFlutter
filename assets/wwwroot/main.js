@@ -180,6 +180,9 @@ function initTopViewer(
   docPath,
   onselCallback
 ) {
+  // document.getElementById("imgmiguel").src =
+  //   "./data/user/0/com.example.minisitewalkapp/app_flutter/assets/google-76517_1280.png";
+
   const options = {
     env: "Local",
     document: docPath,
