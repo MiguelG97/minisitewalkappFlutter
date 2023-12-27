@@ -50,6 +50,8 @@ class _LocationsPanelState extends State<LocationsPanel> {
             _translateX = _hidden ? -_width : 0;
             state.isLandingPage = false;
           }
+          roomItems.add(Room(name: "3D View", id: -1, props: []));
+          //add 3dview
         } else if (state is ViewDisplayingElev) {
           //force it to hide it
           if (state.forceToHide == true) {

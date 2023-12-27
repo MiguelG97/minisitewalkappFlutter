@@ -81,7 +81,9 @@ flutter:
     - assets/wwwroot/res/ui/
     - assets/wwwroot/res/locales/en/
     - assets/wwwroot/res/environments/
+    # - assets/wwwroot/resource/
     - assets/wwwroot/resource/46_HARRISON_SQUARE/
+    # - assets/wwwroot/resource/46_HARRISON_SQUARE/3dview/
     - assets/wwwroot/resource/46_HARRISON_SQUARE/BATH_1/
     - assets/wwwroot/resource/46_HARRISON_SQUARE/CL_1/
     - assets/wwwroot/resource/46_HARRISON_SQUARE/CL_WI/

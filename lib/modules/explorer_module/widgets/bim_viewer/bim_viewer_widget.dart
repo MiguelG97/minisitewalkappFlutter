@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +13,7 @@ import 'package:minisitewalkapp/modules/explorer_module/bloc/viewer_states.dart'
 import 'package:minisitewalkapp/modules/explorer_module/models/autodesk_views.dart';
 import 'package:minisitewalkapp/modules/explorer_module/models/room_model.dart';
 import 'package:minisitewalkapp/modules/unit_plans/models/unit_plan.dart';
+import 'package:path_provider/path_provider.dart';
 
 class BimViewerWidget extends StatefulWidget {
   @override
@@ -36,17 +38,19 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
         CheckMeasureBloc checkMeasureBloc = context.read<CheckMeasureBloc>();
 
         return InAppWebView(
-          // initialSettings: InAppWebViewSettings(
-          //     allowFileAccess: true,
-          //     allowContentAccess: true,
-          //     webViewAssetLoader: WebViewAssetLoader(
-          //         pathHandlers: [MyCustomPathHandler(path: "/")])),
+          initialSettings: InAppWebViewSettings(
+              allowFileAccess: true,
+              allowContentAccess: true,
+              webViewAssetLoader: WebViewAssetLoader(pathHandlers: [
+                MyCustomPathHandler(path: "/assets/")
+                // MyCustomPathHandler(path: "/")
+              ])),
           onConsoleMessage: (controller, consoleMessage) {
             print(consoleMessage.message);
           },
           initialUrlRequest: URLRequest(
               url: WebUri.uri(Uri.parse(
-                  "http://localhost:8080/assets/wwwroot/index.html"))),
+                  "https://appassets.androidplatform.net/assets/flutter_assets/assets/wwwroot/index.html"))), //"http://localhost:8080/assets/wwwroot/index.html"
           onWebViewCreated: (controller) {
             viewerBloc.controller = controller;
             controller.addJavaScriptHandler(
@@ -62,6 +66,14 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
                   orElse: () => Room(name: "null", id: 40, props: []),
                 );
                 if (theroom.name == "null") return "isnotaroom";
+                //for 3d views
+                if (theroom.id == -1) {
+                  if (viewerBloc.elevsDisplayed == false) {
+                    viewerBloc.add(ViewerElevationsDisplayed());
+                    viewerBloc.elevsDisplayed = true;
+                  }
+                  return "is3dview";
+                }
 
                 //iii) search the viewables in from the props
                 //wrong data! it's passing other floors and elevations!
@@ -138,8 +150,11 @@ class _BimViewerWidgetState extends State<BimViewerWidget> {
           },
           onLoadStop: (controller, url) async {
             //1) here we trigger the first view initialization!!
+            // String unitFloorPlanPath =
+            //     '"resource/${selectedUnitPlan.assetPath}/Unit_Floor_Plan.pdf"';
             String unitFloorPlanPath =
-                '"resource/${selectedUnitPlan.assetPath}/Unit_Floor_Plan.pdf"'; //initial path!
+                '"./data/user/0/com.example.minisitewalkapp/app_flutter/Floor Plan/Unit Floor Plan1.pdf"';
+            //initial path!
             controller.evaluateJavascript(
                 source:
                     'initTopViewer(document.getElementById("topViewer"),${unitFloorPlanPath},onFirstSelectionChanged)');
@@ -156,7 +171,21 @@ class MyCustomPathHandler extends CustomPathHandler {
   @override
   Future<WebResourceResponse?> handle(String path) async {
     try {
-      final assetPath = path.replaceFirst("/assets/wwwroot", "");
+      String assetPath = path.replaceFirst("flutter_assets/", "");
+      if (path.contains("data/user")) {
+        // Directory directory = await getApplicationDocumentsDirectory();
+        // File pdfFile =
+        //     File('${directory.path}/Floor Plan/Unit Floor Plan1.pdf');
+
+        assetPath = path.replaceFirst("flutter_assets/assets/wwwroot", "");
+        File pdfFile = File(assetPath);
+        Uint8List bytesStored = await pdfFile.readAsBytes();
+        return WebResourceResponse(
+          contentType: lookupMimeType(path),
+          data: bytesStored,
+        );
+      }
+
       final data = await rootBundle.load(assetPath);
       return WebResourceResponse(
         contentType: lookupMimeType(path),

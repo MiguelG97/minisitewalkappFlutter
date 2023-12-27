@@ -37,6 +37,25 @@ const onFirstSelectionChanged = async (dbi) => {
 
   if (!isFlutterInAppWebViewReady) return;
 
+  //for 3D view:
+  if (id === -1) {
+    topViewer.unloadModel(topViewer.model);
+    topViewer.finish();
+    const container3D =
+      document.getElementById("topViewer");
+    const viewElv =
+      await window.flutter_inappwebview.callHandler(
+        "roomSelected",
+        id
+      );
+    initTopViewer(
+      container3D,
+      `data/user/0/com.example.minisitewalkapp/app_flutter/46_HARRISON_SQUARE/3dview/{3D}.svf`,
+      onTopBottomSelectionChanged
+    );
+    return;
+  }
+
   //a) receive the views to display from flutter side
   const viewElv =
     await window.flutter_inappwebview.callHandler(
@@ -217,7 +236,11 @@ function initTopViewer(
             .SELECTION_CHANGED_EVENT,
           onselCallback
         );
-        // viewer.setTheme("light-theme");
+        try {
+          viewer.setTheme("light-theme");
+        } catch (error) {
+          console.log(error);
+        }
         topViewer.setLightPreset(0);
         resolve(topViewer);
       }

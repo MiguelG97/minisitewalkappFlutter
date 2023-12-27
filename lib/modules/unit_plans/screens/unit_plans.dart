@@ -42,9 +42,49 @@ class _InitScreenState extends State<InitScreen> {
     // storeAsssetBytes();
 
     // readAppDocDirFiles();
-    getStoredFiles();
+    // getStoredFiles();
     // deleteFile();
+    // store3dFiles();
     super.initState();
+  }
+
+  void store3dFiles() async {
+    // String fileName = "0.pf";
+    // List<String> fileNames = [
+    //   "1.pf",
+    //   "2.pf",
+    //   "CameraDefinitions.bin",
+    //   "CameraList.bin",
+    //   "FragmentList.pack",
+    //   "GeometryMetadata.pf",
+    //   "InstanceTree.bin",
+    //   "LightDefinitions.bin",
+    //   "LightList.bin",
+    //   "Materials.json.gz",
+    //   "Set.bin"
+    // ];
+    List<String> fileNames = [
+      "objects_attrs.json.gz",
+      "objects_avs.json.gz",
+      "objects_ids.json.gz",
+      "objects_offs.json.gz",
+      "objects_vals.json.gz",
+      "objects_viewables.json.gz"
+    ];
+    for (var fileName in fileNames) {
+      ByteData data1 =
+          await rootBundle.load("assets/wwwroot/resource/$fileName");
+      Uint8List byte1 = Uint8List.sublistView(data1);
+
+      Directory directory = await getApplicationDocumentsDirectory();
+      File file1 =
+          await File('${directory.path}/$fileName').create(recursive: true);
+      file1 = await file1.writeAsBytes(byte1);
+      print(file1);
+    }
+
+    ///data/user/0/com.example.minisitewalkapp/app_flutter/46_HARRISON_SQUARE/3dview/{3D}.svf
+    ///data/user/0/com.example.minisitewalkapp/app_flutter/46_HARRISON_SQUARE/3dview/0.pf
   }
 
   void storeAsssetBytes() async {
